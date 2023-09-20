@@ -2,13 +2,43 @@
     BoxLayout:
         orientation: 'vertical'
         spacing: 10
-        padding: 40        
-        TextInput:
-            id: txtid
-            text: "Enter your poem here"                                    
-            size_hint: 1, 0.9
+        padding: 40
+
+        BoxLayout:
+            padding: 0
+            spacing: 0
+            orientation: 'vertical'
+            size_hint: 1, 1
+            MyLabel:
+                text: "Enter your text below"
+                size_hint: 1, 0.1
+            MyTextInput:
+                id: txtid                                    
+                size_hint: 1, 0.8
+                font_size: 20
+                padding: 10
+                 
+
         Button:
             text: "Generate Video"
+            font_size: 20
             size_hint: 1, 0.1
+            background_color: (0, 0, 0, 1)
             on_press: root.generate()
                     
+<MyLabel@Label>:
+    font_size: 25
+    color: 1, 1, 1, 1
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1  # Set the background color to green (RGBA)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<MyTextInput@TextInput>:
+    #background_color: 1, 1, 1, 1  # White background color
+    #border: 2, 2, 2, 2  # Set the border width (in pixels) on all sides
+    border_color: 0, 0, 0, 1  # Black border color
+
+       
