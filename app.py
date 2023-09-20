@@ -28,11 +28,11 @@ import requests
 Builder.load_file('app.kv')
 
 class ScreenOne(Screen):
-    def query(payload, API_URL, headers):
+    def query(self, payload, API_URL, headers):
         response = requests.post(API_URL, headers=headers, json=payload)
         return response.content
 
-    def create_video_from_images(imgs, times, output_filename, fps=30):
+    def create_video_from_images(self, imgs, times, output_filename, fps=30):
         if len(imgs) != len(times):
             raise ValueError("Number of images and times must be the same.")
 
@@ -47,7 +47,7 @@ class ScreenOne(Screen):
         video.write_videofile(output_filename, codec='libx264')
 
 
-    def concatenate_audio_moviepy(audio_clip_paths, output_path):
+    def concatenate_audio_moviepy(self, audio_clip_paths, output_path):
         """Concatenates several audio files into one audio file using MoviePy
     and save it to `output_path`. Note that extension (mp3, etc.) must be added to `output_path`"""
         clips = [AudioFileClip(c) for c in audio_clip_paths]
@@ -58,7 +58,7 @@ class ScreenOne(Screen):
     def generate(self):
         txt = self.ids.txtid.text
         API_URL = config('API_URL')
-        headers = config('AUTH')
+        headers = {"Authorization": str(config("AUTH"))}
         
         imgList = txt.split("\n")
 
@@ -82,27 +82,34 @@ class ScreenOne(Screen):
         self.concatenate_audio_moviepy(paths, "audio.mp3")
 
         video_clip = VideoFileClip("output.mp4")
-        audio_clip = AudioFileClip("clubbed.mp3")
+        audio_clip = AudioFileClip("audio.mp3")
 
         final_clip = video_clip.set_audio(audio_clip)
-        final_clip.write_videofile("FinalOne.mp4")
+        final_clip.write_videofile("Video.mp4")
 
-        self.manager.current = "second"
-
-    
+        app = App.get_running_app()
+        second_screen = app.root.get_screen('second')
+        second_screen.update_video('Video.mp4')
+        app.root.current = 'second'
         
 
-class ScreenTwo(Screen):
+    
+class VideoScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        video_player = VideoPlayer(source="FinalOne.mp4")
-        self.add_widget(video_player)
+        path = ''
+        # Create a VideoPlayer widget and set its source
+        self.video = VideoPlayer(source=path)
+        self.add_widget(self.video)    
+    
+    def update_video(self, source_path):
+        self.video.source = source_path        
 
 class AiVideoGenerator(App):
     def build(self):
         sm = ScreenManager()
         one = ScreenOne(name = "first")
-        two = ScreenTwo(name = "second")
+        two = VideoScreen(name = "second")
         sm.add_widget(one)
         sm.add_widget(two)
         return sm
