@@ -1,0 +1,14 @@
+<ScreenOne>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+        padding: 40        
+        TextInput:
+            id: "txtid"
+            text: "Enter your poem here"                                    
+            size_hint: 1, 0.9
+        Button:
+            text: "Generate Video"
+            size_hint: 1, 0.1
+            on_press: root.generate()
+                    
